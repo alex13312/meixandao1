@@ -1,0 +1,660 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Financeira Diária</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card-receita { background: linear-gradient(135deg, #10b981, #059669); }
+        .card-despesa { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .card-saldo { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .card-meta { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        
+        .card-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-info h3 {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-info p {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+        
+        .forms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .form-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .form-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        
+        .form-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-title span {
+            margin-right: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+        
+        select option {
+            background: #333;
+            color: white;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .btn-receita {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .btn-despesa {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            width: auto;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            width: auto;
+            font-size: 0.9rem;
+        }
+        
+        .table-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .table-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .table-title span {
+            margin-right: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid;
+        }
+        
+        .badge-receita {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .badge-despesa {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.4);
+            color: white;
+        }
+        
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            opacity: 0.7;
+            font-size: 1.1rem;
+        }
+        
+        .text-green { color: #6ee7b7; }
+        .text-red { color: #fca5a5; }
+        
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 2rem; }
+            .forms-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .table-header { flex-direction: column; align-items: stretch; }
+            .table-actions { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>💰 Gestão Financeira</h1>
+            <p>Controle suas receitas, despesas e acompanhe seus ganhos</p>
+        </div>
+
+        <!-- Cards de Resumo -->
+        <div class="cards-grid">
+            <div class="card card-receita">
+                <div class="card-content">
+                    <div class="card-info">
+                        <h3>Total Receitas</h3>
+                        <p id="totalReceitas">R$ 0,00</p>
+                    </div>
+                    <div class="card-icon">📈</div>
+                </div>
+            </div>
+            <div class="card card-despesa">
+                <div class="card-content">
+                    <div class="card-info">
+                        <h3>Total Despesas</h3>
+                        <p id="totalDespesas">R$ 0,00</p>
+                    </div>
+                    <div class="card-icon">📉</div>
+                </div>
+            </div>
+            <div class="card card-saldo">
+                <div class="card-content">
+                    <div class="card-info">
+                        <h3>Saldo Atual</h3>
+                        <p id="saldoAtual">R$ 0,00</p>
+                    </div>
+                    <div class="card-icon">💳</div>
+                </div>
+            </div>
+            <div class="card card-meta">
+                <div class="card-content">
+                    <div class="card-info">
+                        <h3>Meta Mensal</h3>
+                        <p id="metaMensal">R$ 5.000,00</p>
+                    </div>
+                    <div class="card-icon">🎯</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulários -->
+        <div class="forms-grid">
+            <!-- Adicionar Receita -->
+            <div class="form-card">
+                <h2 class="form-title">
+                    <span>💰</span>
+                    Adicionar Receita
+                </h2>
+                <form id="formReceita">
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <input type="text" id="descricaoReceita" placeholder="Ex: Salário, Freelance..." required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Valor (R$)</label>
+                            <input type="number" id="valorReceita" step="0.01" placeholder="0,00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Data</label>
+                            <input type="date" id="dataReceita" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-receita">✨ Adicionar Receita</button>
+                </form>
+            </div>
+
+            <!-- Adicionar Despesa -->
+            <div class="form-card">
+                <h2 class="form-title">
+                    <span>💸</span>
+                    Adicionar Despesa
+                </h2>
+                <form id="formDespesa">
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <input type="text" id="descricaoDespesa" placeholder="Ex: Alimentação, Transporte..." required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Valor (R$)</label>
+                            <input type="number" id="valorDespesa" step="0.01" placeholder="0,00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Data</label>
+                            <input type="date" id="dataDespesa" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="categoriaDespesa">
+                            <option value="Alimentação">🍽️ Alimentação</option>
+                            <option value="Transporte">🚗 Transporte</option>
+                            <option value="Moradia">🏠 Moradia</option>
+                            <option value="Saúde">🏥 Saúde</option>
+                            <option value="Educação">📚 Educação</option>
+                            <option value="Lazer">🎮 Lazer</option>
+                            <option value="Outros">📦 Outros</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-despesa">💸 Adicionar Despesa</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabela de Transações -->
+        <div class="table-card">
+            <div class="table-header">
+                <h2 class="table-title">
+                    <span>📊</span>
+                    Histórico de Transações
+                </h2>
+                <div class="table-actions">
+                    <button id="btnLimpar" class="btn btn-secondary">🗑️ Limpar Tudo</button>
+                    <button id="btnExportar" class="btn btn-primary">📥 Exportar CSV</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                            <th>Categoria</th>
+                            <th>Valor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaTransacoes">
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                ✨ Nenhuma transação registrada ainda. Adicione sua primeira receita ou despesa!
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados da aplicação
+        let transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+        
+        // Definir data atual como padrão
+        document.getElementById('dataReceita').value = new Date().toISOString().split('T')[0];
+        document.getElementById('dataDespesa').value = new Date().toISOString().split('T')[0];
+
+        // Função para formatar moeda
+        function formatarMoeda(valor) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(valor);
+        }
+
+        // Função para formatar data
+        function formatarData(data) {
+            return new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
+        }
+
+        // Função para atualizar resumo
+        function atualizarResumo() {
+            const receitas = transacoes.filter(t => t.tipo === 'receita').reduce((sum, t) => sum + t.valor, 0);
+            const despesas = transacoes.filter(t => t.tipo === 'despesa').reduce((sum, t) => sum + t.valor, 0);
+            const saldo = receitas - despesas;
+
+            document.getElementById('totalReceitas').textContent = formatarMoeda(receitas);
+            document.getElementById('totalDespesas').textContent = formatarMoeda(despesas);
+            document.getElementById('saldoAtual').textContent = formatarMoeda(saldo);
+        }
+
+        // Função para atualizar tabela
+        function atualizarTabela() {
+            const tbody = document.getElementById('tabelaTransacoes');
+            
+            if (transacoes.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            ✨ Nenhuma transação registrada ainda. Adicione sua primeira receita ou despesa!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Ordenar por data (mais recente primeiro)
+            const transacoesOrdenadas = [...transacoes].sort((a, b) => new Date(b.data) - new Date(a.data));
+
+            tbody.innerHTML = transacoesOrdenadas.map((transacao, index) => `
+                <tr>
+                    <td>${formatarData(transacao.data)}</td>
+                    <td>
+                        <span class="badge ${transacao.tipo === 'receita' ? 'badge-receita' : 'badge-despesa'}">
+                            ${transacao.tipo === 'receita' ? '📈 Receita' : '📉 Despesa'}
+                        </span>
+                    </td>
+                    <td>${transacao.descricao}</td>
+                    <td>${transacao.categoria || '-'}</td>
+                    <td class="${transacao.tipo === 'receita' ? 'text-green' : 'text-red'}">
+                        ${transacao.tipo === 'receita' ? '+' : '-'} ${formatarMoeda(transacao.valor)}
+                    </td>
+                    <td>
+                        <button onclick="removerTransacao(${transacoes.indexOf(transacao)})" class="btn-delete">
+                            🗑️ Excluir
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Função para salvar no localStorage
+        function salvarDados() {
+            localStorage.setItem('transacoes', JSON.stringify(transacoes));
+        }
+
+        // Função para adicionar receita
+        document.getElementById('formReceita').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const transacao = {
+                tipo: 'receita',
+                descricao: document.getElementById('descricaoReceita').value,
+                valor: parseFloat(document.getElementById('valorReceita').value),
+                data: document.getElementById('dataReceita').value,
+                categoria: null
+            };
+
+            transacoes.push(transacao);
+            salvarDados();
+            atualizarResumo();
+            atualizarTabela();
+            
+            // Limpar formulário
+            this.reset();
+            document.getElementById('dataReceita').value = new Date().toISOString().split('T')[0];
+        });
+
+        // Função para adicionar despesa
+        document.getElementById('formDespesa').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const transacao = {
+                tipo: 'despesa',
+                descricao: document.getElementById('descricaoDespesa').value,
+                valor: parseFloat(document.getElementById('valorDespesa').value),
+                data: document.getElementById('dataDespesa').value,
+                categoria: document.getElementById('categoriaDespesa').value
+            };
+
+            transacoes.push(transacao);
+            salvarDados();
+            atualizarResumo();
+            atualizarTabela();
+            
+            // Limpar formulário
+            this.reset();
+            document.getElementById('dataDespesa').value = new Date().toISOString().split('T')[0];
+        });
+
+        // Função para remover transação
+        function removerTransacao(index) {
+            if (confirm('Tem certeza que deseja excluir esta transação?')) {
+                transacoes.splice(index, 1);
+                salvarDados();
+                atualizarResumo();
+                atualizarTabela();
+            }
+        }
+
+        // Função para limpar todos os dados
+        document.getElementById('btnLimpar').addEventListener('click', function() {
+            if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
+                transacoes = [];
+                salvarDados();
+                atualizarResumo();
+                atualizarTabela();
+            }
+        });
+
+        // Função para exportar CSV
+        document.getElementById('btnExportar').addEventListener('click', function() {
+            if (transacoes.length === 0) {
+                alert('Não há dados para exportar!');
+                return;
+            }
+
+            const csv = [
+                ['Data', 'Tipo', 'Descrição', 'Categoria', 'Valor'],
+                ...transacoes.map(t => [
+                    formatarData(t.data),
+                    t.tipo,
+                    t.descricao,
+                    t.categoria || '',
+                    t.valor.toFixed(2).replace('.', ',')
+                ])
+            ].map(row => row.join(';')).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `financas_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        });
+
+        // Inicializar aplicação
+        atualizarResumo();
+        atualizarTabela();
+    </script>
+</body>
+</html>
